@@ -1,0 +1,47 @@
+\documentclass[12pt,letterpaper]{article} % a. Set paper size to Letter, 8½ x 11. 
+
+% Document settings and packages
+\input{settings}
+
+\begin{document}
+\selectlanguage{english}
+
+\input{pages/cover}
+\input{pages/disclaimer}
+\input{pages/abstract}
+\input{pages/toc}
+\input{pages/content}
+
+\pagebreak
+
+% TODO: appendix chapter
+\input{pages/appendix}
+
+\pagebreak
+
+\microtypesetup{protrusion=false}
+\listoffigures{}
+\listoftables{}
+\microtypesetup{protrusion=true}
+
+\clearpage
+\printglossaries
+
+\pagebreak
+
+\iflanguage{english}{
+\addcontentsline{toc}{section}{Bibliography}
+}
+{}
+\iflanguage{german}{
+\addcontentsline{toc}{section}{Literatur}
+}
+{}
+\pagestyle{fancy}
+
+\bibliographystyle{language-dt} %using language.bst
+\bibliography{bibliography} %bib-filename
+
+\nocite{*} %List all bib-entries
+
+\end{document}
