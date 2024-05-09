@@ -2,6 +2,7 @@
 
 % Document settings and packages
 \input{settings}
+\input{pages/glossary}
 
 \begin{document}
 \selectlanguage{english}
@@ -9,7 +10,12 @@
 \input{pages/cover}
 \input{pages/disclaimer}
 \input{pages/abstract}
-\input{pages/toc}
+
+\newpage
+\tableofcontents
+\newpage
+
+\pagenumbering{arabic}
 \input{pages/content}
 
 \pagebreak
@@ -25,18 +31,12 @@
 \microtypesetup{protrusion=true}
 
 \clearpage
-\printglossaries
+
+\printglossary
 
 \pagebreak
 
-\iflanguage{english}{
 \addcontentsline{toc}{section}{Bibliography}
-}
-{}
-\iflanguage{german}{
-\addcontentsline{toc}{section}{Literatur}
-}
-{}
 \pagestyle{fancy}
 
 \bibliographystyle{language-dt} %using language.bst

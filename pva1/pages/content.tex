@@ -5,15 +5,47 @@
 \renewcommand{\headrulewidth}{0pt} %obere Trennlinie
 
 \section{Introduction}
+Nowadays, many processes handling large amounts of data (not to confuse with Big Data
+\footnote{Data with high variety, volume and velocity. Cannot be processed by conventional data processing software.})
+already exist. Still, they must be maintained, verified and optimized to ensure both
+quality and efficiency.
 
-\subsection{Problem}
-\subsection{Objectives}
-\subsection{Structure}
+\subsection{Motivation}
+At q.beyond, we had to deal with just that: large monthly CSV exports by a third-party service provider
+that our process was operating on. For verification, we collected the exports from last year,
+grouped the records by a column and exported each group as an individual Excel file.
+Each file contained two sheets: one with an aggregated monthly overview and the other with all the
+individual records of that particular group. As we will explore in \ref{Grouping}, this
+result actually requires two different kinds of grouping.
 
-\section{Theoretical Foundation}
+[TODO: Result Figure]
+
+We ended up writing a PowerShell\footnote{A scripting language coming with Windows. Used for administrative and automation tasks.}
+Script, which, in our first draft, crashed our \gls{AVD}
+due to insufficient \gls{RAM}.
+
+\subsection{Main contributions}
+Based on this experience, we can define the purpose of this paper:
+\begin{itemize}
+    \item \textbf{Problem}: We need to group CSV data bigger than the available RAM
+    \item \textbf{Objectives}:
+    \begin{enumerate}
+        \item Find a solution that can group large CSV data
+        \item Proof by tests and simulation that the solution works
+    \end{enumerate}
+    \item \textbf{Questions}:
+    \begin{enumerate}
+        \item Why does the \verb+Group-Object+ command not work on limited RAM?
+        \item What are requirements for a grouping algorithm in order to run on low RAM?
+    \end{enumerate}
+\end{itemize}
+As an alternative solution, we will consider MySQL, a \gls{DBMS}.
+
+\newpage
+\section{Background}
 
 \subsection{Database}
-\subsection{Grouping, Aggregation, Splitting}
+\subsection{Grouping, Aggregation, Splitting} \label{Grouping}
 
 \section{Simulation}
 
