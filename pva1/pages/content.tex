@@ -5,7 +5,7 @@
 \renewcommand{\headrulewidth}{0pt} %obere Trennlinie
 
 \section{Introduction}
-Nowadays, many processes handling large amounts of data (not to confuse with Big Data
+Nowadays, many processes that handle large amounts of data (not to confuse with Big Data
 \footnote{Data with high variety, volume and velocity. Cannot be processed by conventional data processing software.})
 already exist. Still, they must be maintained, verified and optimized to ensure both
 quality and efficiency.
@@ -21,8 +21,8 @@ result actually requires two different kinds of grouping.
 [TODO: Result Figure]
 
 We ended up writing a PowerShell\footnote{A scripting language coming with Windows. Used for administrative and automation tasks.}
-Script, which, in our first draft, crashed our \gls{AVD}
-due to insufficient \gls{RAM}.
+Script, which, in our first draft, crashed the \gls{AVD}
+it was running on due to insufficient \gls{RAM}.
 
 \subsection{Main contributions}
 Based on this experience, we can define the purpose of this paper:
@@ -44,8 +44,22 @@ As an alternative solution, we will consider MySQL, a \gls{DBMS}.
 \newpage
 \section{Background}
 
-\subsection{Database}
-\subsection{Grouping, Aggregation, Splitting} \label{Grouping}
+\subsection{Relational Model}
+
+% We will use relational algebra to describe the actual grouping
+% operations we want to perform.
+% In chapter 4.2.1, \cite{Ram98} presents the selection
+% operator, which selects a subset of rows from a relation.
+
+% \begin{definition}
+% Let $R$ be a relation. Then
+% \[
+%     \sigma_{c}({R}) := \set{e \in R | c(e)}
+% \]
+% is the selection on R with elements for which the condition $c$ holds true.
+% \end{definition}
+
+\newpage
 
 \section{Simulation}
 
