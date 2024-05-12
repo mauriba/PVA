@@ -8,6 +8,39 @@
 \usepackage{braket}
 \newtheorem{definition}{Definition}
 
+\usepackage{hyperref}
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\newcounter{codecounter}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.93,0.95}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
 % Set the headheight to at least 14.49998pt
 \setlength{\headheight}{14.49998pt}
 
@@ -29,7 +62,6 @@
 %\usepackage{xunicode}
 %\usepackage{xltxtra}
 \usepackage{url}
-\usepackage{hyperref}
 \usepackage[english,german]{babel}
 
 \usepackage{graphicx}

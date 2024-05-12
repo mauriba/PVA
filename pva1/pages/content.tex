@@ -5,29 +5,33 @@
 \renewcommand{\headrulewidth}{0pt} %obere Trennlinie
 
 \section{Introduction}
-Nowadays, many processes that handle large amounts of data (not to confuse with Big Data
-\footnote{Data with high variety, volume and velocity. Cannot be processed by conventional data processing software.})
+Nowadays, many processes that handle large amounts of data (not to confuse with Big Data\footnote{Data
+with high variety, volume and velocity. Cannot be processed by conventional data processing software.})
 already exist. Still, they must be maintained, verified and optimized to ensure both
 quality and efficiency.
 
-\subsection{Motivation}
-At q.beyond, we had to deal with just that: large monthly CSV exports by a third-party service provider
-that our process was operating on. For verification, we collected the exports from last year,
+\subsection{Motivation} \label{Motivation}
+At q.beyond, we had to deal with just that: large monthly CSV exports
+(each file contains the data of a month) by a third-party service provider
+that our process was operating on. For verification, we collected the exports from a whole year,
 grouped the records by a column and exported each group as an individual Excel file.
 Each file contained two sheets: one with an aggregated monthly overview and the other with all the
-individual records of that particular group. As we will explore in \ref{Grouping}, this
-result actually requires two different kinds of grouping.
+individual records of that particular group.
+% For this paper, we will focus on the aggregation.
+In \ref{Grouping}, we will explain why those
+two sheets require grouping, but only the latter requires every particular record to be stored
+(in memory or storage).
 
-[TODO: Result Figure]
+% TODO: Result figure
 
 We ended up writing a PowerShell\footnote{A scripting language coming with Windows. Used for administrative and automation tasks.}
 Script, which, in our first draft, crashed the \gls{AVD}
-it was running on due to insufficient \gls{RAM}.
+it was running on due to insufficient memory.
 
 \subsection{Main contributions}
 Based on this experience, we can define the purpose of this paper:
 \begin{itemize}
-    \item \textbf{Problem}: We need to group CSV data bigger than the available RAM
+    \item \textbf{Problem}: We need to group CSV data bigger than the available memory
     \item \textbf{Objectives}:
     \begin{enumerate}
         \item Find a solution that can group large CSV data
@@ -35,8 +39,8 @@ Based on this experience, we can define the purpose of this paper:
     \end{enumerate}
     \item \textbf{Questions}:
     \begin{enumerate}
-        \item Why does the \verb+Group-Object+ command not work on limited RAM?
-        \item What are requirements for a grouping algorithm in order to run on low RAM?
+        \item Why does the \verb+Group-Object+ command not work on limited memory?
+        \item What are requirements for a grouping algorithm in order to run on low memory?
     \end{enumerate}
 \end{itemize}
 As an alternative solution, we will consider MySQL, a \gls{DBMS}.
@@ -44,7 +48,139 @@ As an alternative solution, we will consider MySQL, a \gls{DBMS}.
 \newpage
 \section{Background}
 
+\subsection{Comma-Separated Values (CSV)}
+
+Specified in \cite{rfc4180}, CSV is a file format for storing a table in plain text.
+It has the following characteristics:
+
+\begin{enumerate}
+    \item each row starts on a new line
+    \item the values for each column are separated by a delimiter (usually a comma)
+    \item there may be a header line those values specify the names of the columns
+    \item whitespaces other than line breaks are ignored, unless part of a value
+\end{enumerate}
+Our CSV export is structured in exactly this way. Let it be\footnote{
+In this paper, we will use a simplification and abstraction of the original
+data mentioned in \ref{Motivation}. The "$\dots$" indicate that
+it is indeed a large CSV with many more records.}:
+
+\begin{lstlisting}[escapeinside={(*}{*)},numbers=left,caption=CSV export,label={lst:csvexport}]
+tid,    pname,  amount,     comment (*\label{csvexport:header}*)
+1,      Alice,  -1,         daily expenses
+2,      Bob,    2,          pocket money
+3,      Alice,  1,          friend
+4,      Carl,   0,          dummy
+5,      Dan,    2.99,       card game
+...
+\end{lstlisting}
+
+%TODO: Add csv export
+
 \subsection{Relational Model}
+
+Introduced by E. F. \cite{Codd70}, the relational model is a mathematical
+description of data management, structuring data in tuples and tuples
+in relations. A relational algebra is provided to act as a simple
+mathematical query language. Industrial query languages
+like SQL later implemented the features described in the relational model.
+
+As further explained by \cite{Aren22}, a relation
+is just a pair of a relation schema and a set of tuples (the rows of the relation).
+
+\subsubsection{Relational Schema}
+Arenas defines the relation schema based on three characteristics:
+\begin{itemize}
+    \item \textbf{relation name}: the name of the table
+    \item \textbf{relation attributes}: a list of uniquely identifiable attributes/columns
+    \item \textbf{relation arity}: the number of attributes/columns
+\end{itemize}
+\cite{Schw10} defines the relation schema more formally as a database-wide mapping
+from relation names to either their respective arity (unnamed perspective) or
+their respective attributes (named perspective). Then, a row in a relation
+is either defined as a tuple of values $a = (a_1,\dots, a_n)$ (unnamed perspective) or
+a set of pairs $a = \set{(c_1, a_1),\dots, (c_n, a_n)}$, where each pair consists of
+the column name $c_n$ and the value $a_n$ assigned to it (named perspective).
+
+We will use the named perspective. For that, we must ensure that each column
+got a unique name. Luckily, the header from our CSV export statisfies this condition
+(see listing \ref{lst:csvexport}). In the named perspective, let its schema be:
+
+\begin{center}
+\verb+Transaction [ tid, pname, amount, comment ]+
+\end{center}
+
+Note that we do not assign any types to the attributes,
+as the CSV header row only consists of attribute names.
+This conforms with the understanding of the relational model
+from Schweikardt, who just assumes that the values for our columns come from an infinite set
+containing any values for any columns.
+
+The visual representation of a relation is a table. Below figure shows the
+corresponding relation to the first 5 records of the CSV export from listing \ref{lst:csvexport}.
+
+\begin{table}[htbp] \label{Transaction}
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        tid     & pname & amount    & comment \\ \hline\hline
+        1       & Alice & -1        & daily expense \\ \hline
+        2       & Bob   & 2         & pocket money \\ \hline
+        3       & Alice & 1         & friend\\ \hline
+        4       & Carl  & 0         & dummy\\ \hline
+        5       & Dan   & 2.99      & card game\\ \hline
+    \end{tabular}
+    \caption{Transaction}
+\end{table}
+
+\subsubsection{Selection and Projection}
+
+In chapter 12.1, \cite{Halp08} introduces relational algebra. It includes six
+comparison operators $\theta \in \Set{=, <>, <, >, \leq, \geq}$ as well as the
+three logical operators $\Set{\land, \lor, \neg}$. Furthermore, some
+language-specific operations are defined. We will focus on the selection and projection.
+
+Given a relation $R$, the selection operator $\sigma_c(R)$ selects all rows from
+that relation that match the condition $c$ (similar to the \textbf{where} clause in \gls{SQL}).
+Such condition can consist of any valid
+expression using comparison operators, logical operators, attributes and constants.
+
+For example, the selection $\sigma_{\text{pname}=\text{Alice}}(\text{Transaction})$
+returns the following relation:
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        tid     & pname & amount    & comment \\ \hline\hline
+        1       & Alice & -1        & daily expense \\ \hline
+        3       & Alice & 1         & friend\\ \hline
+    \end{tabular}
+    \caption{Selection of \textit{pname$=$Alice} on Transaction}
+\end{table}
+
+Similarly, the projection operator $\pi_{a1, \dots, a_n}(R)$ projects all columns
+from a relation $R$ stated in the projection list $a1, \dots, a_n$, and
+ignores all others. Consider the query $\pi_{\text{pname}}(\text{Transaction})$:
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|c|}
+        \hline
+        pname \\ \hline\hline
+        Alice \\ \hline
+        Bob   \\ \hline
+        Carl  \\ \hline
+        Dan   \\ \hline
+    \end{tabular}
+    \caption{Projection of \textit{pname} on Transaction}
+\end{table}
+
+Note that the projection removes fully duplicate rows, hence why Alice only exists once in
+the resulting relation.
+
+As the visualizations suggests, both the selection and projection return a relation.
+
+\subsection{Grouping} \label{Grouping}
 
 % We will use relational algebra to describe the actual grouping
 % operations we want to perform.

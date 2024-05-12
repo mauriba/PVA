@@ -1,0 +1,9 @@
+% @book{Ram98,
+% 	AUTHOR = {Ramakrishnan, Raghu},
+% 	YEAR = {1998},
+% 	TITLE = {Database Management Systems},
+% 	EDITION = {2},
+% 	ISBN = {978-0-070-50775-3},
+% 	PUBLISHER = {WCB/McGraw-Hill},
+% 	ADDRESS = {Boston},
+% }
