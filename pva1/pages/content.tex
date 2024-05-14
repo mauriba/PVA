@@ -31,7 +31,7 @@ it was running on due to insufficient memory.
 \subsection{Main contributions}
 Based on this experience, we can define the purpose of this paper:
 \begin{itemize}
-    \item \textbf{Problem}: We need to group CSV data bigger than the available memory
+    \item \textbf{Problem}: We need to aggregate CSV data bigger than the available memory
     \item \textbf{Objectives}:
     \begin{enumerate}
         \item Find a solution that can group large CSV data
@@ -57,11 +57,11 @@ It has the following characteristics:
     \item each row starts on a new line
     \item the values for each column are separated by a delimiter (usually a comma)
     \item there may be a header line those values specify the names of the columns
-    \item whitespaces other than line breaks are ignored, unless part of a value
+    \item whitespaces other than line breaks for 1. are ignored, unless part of a value
 \end{enumerate}
 Our CSV export is structured in exactly this way. Let it be\footnote{
 In this paper, we will use a simplification and abstraction of the original
-data mentioned in \ref{Motivation}. The "$\dots$" indicate that
+data mentioned in \ref{Motivation}. The "$\dots$" indicates that
 it is indeed a large CSV with many more records.}:
 
 \begin{lstlisting}[escapeinside={(*}{*)},numbers=left,caption=CSV export,label={lst:csvexport}]
@@ -101,9 +101,10 @@ is either defined as a tuple of values $a = (a_1,\dots, a_n)$ (unnamed perspecti
 a set of pairs $a = \set{(c_1, a_1),\dots, (c_n, a_n)}$, where each pair consists of
 the column name $c_n$ and the value $a_n$ assigned to it (named perspective).
 
-We will use the named perspective. For that, we must ensure that each column
+In this paper, we will use relations as described in the named perspective.
+For that, we must ensure that each column
 got a unique name. Luckily, the header from our CSV export statisfies this condition
-(see listing \ref{lst:csvexport}). In the named perspective, let its schema be:
+(see listing \ref{lst:csvexport}). Let its schema be:
 
 \begin{center}
 \verb+Transaction [ tid, pname, amount, comment ]+
@@ -112,13 +113,13 @@ got a unique name. Luckily, the header from our CSV export statisfies this condi
 Note that we do not assign any types to the attributes,
 as the CSV header row only consists of attribute names.
 This conforms with the understanding of the relational model
-from Schweikardt, who just assumes that the values for our columns come from an infinite set
+from Schweikardt, who just assumes that the values for our columns origin from an infinite set
 containing any values for any columns.
 
 The visual representation of a relation is a table. Below figure shows the
 corresponding relation to the first 5 records of the CSV export from listing \ref{lst:csvexport}.
 
-\begin{table}[htbp] \label{Transaction}
+\begin{table}[htbp]
     \centering
     \begin{tabular}{|c|c|c|c|}
         \hline
@@ -130,6 +131,7 @@ corresponding relation to the first 5 records of the CSV export from listing \re
         5       & Dan   & 2.99      & card game\\ \hline
     \end{tabular}
     \caption{Transaction}
+    \label{Transaction}
 \end{table}
 
 \subsubsection{Selection and Projection}
@@ -156,6 +158,7 @@ returns the following relation:
         3       & Alice & 1         & friend\\ \hline
     \end{tabular}
     \caption{Selection of \textit{pname$=$Alice} on Transaction}
+    \label{Selection of pname=Alice}
 \end{table}
 
 Similarly, the projection operator $\pi_{a1, \dots, a_n}(R)$ projects all columns
@@ -173,6 +176,7 @@ ignores all others. Consider the query $\pi_{\text{pname}}(\text{Transaction})$:
         Dan   \\ \hline
     \end{tabular}
     \caption{Projection of \textit{pname} on Transaction}
+    \label{Projection of pname}
 \end{table}
 
 Note that the projection removes fully duplicate rows, hence why Alice only exists once in
@@ -182,18 +186,46 @@ As the visualizations suggests, both the selection and projection return a relat
 
 \subsection{Grouping} \label{Grouping}
 
-% We will use relational algebra to describe the actual grouping
-% operations we want to perform.
-% In chapter 4.2.1, \cite{Ram98} presents the selection
-% operator, which selects a subset of rows from a relation.
+Since a projection removes duplicated rows, projecting only
+the grouping column (the column whose distinct values should be the name of our groups),
+results in a relation containing all group names (see table \ref{Projection of pname}).
 
-% \begin{definition}
-% Let $R$ be a relation. Then
-% \[
-%     \sigma_{c}({R}) := \set{e \in R | c(e)}
-% \]
-% is the selection on R with elements for which the condition $c$ holds true.
-% \end{definition}
+\subsubsection{Split into groups} \label{Split into groups}
+
+We can use these group names to split the relation into distinct sub-relations consisting
+only of the elements with the same group name:
+
+\[
+    G := \set{\sigma_{\text{pname}=x}(\text{Transaction})
+        | (\text{pname}, x) \in \pi_{\text{pname}}(\text{Transaction})}
+\]
+
+with $G$ being a set of (sub)relations. We will refer to this kind of grouping as
+\textbf{split into groups}. An algorithm which splits a relation into groups hence
+must put every row into its respective group. In other words: a
+split into groups requires all rows to be loaded in memory (or storage).
+
+Apart from this observation, our definition of $G$ does not further specify the algorithm
+a database could use to perform the split. Usually,
+databases simply sort the relation on the grouping attribute, such that
+rows belonging to the same group are next to each other.
+
+\subsubsection{Aggregate on groups} \label{Aggregate on groups}
+
+Oftentimes, we do not require all the details of all the rows in a group.
+Instead, we only want a summary of our grouped data, also known as aggregation.
+On p. 48, while listing features missing in traditional relational algebra, \cite{Aren22}
+find a great explanation for aggregation and grouping:
+
+\begin{quote}
+An extremely common feature of SQL queries
+is the use of aggregation and grouping. Aggregation allows numerical functions to be
+applied to entire columns, for example, to find the total salary
+of all employees in a company. Grouping allows such columns to be split
+according to a value of some attribute (...)
+\end{quote}
+They also formally define and analyze aggregation as an extension to relational algebra,
+but we will
 
 \newpage
 
