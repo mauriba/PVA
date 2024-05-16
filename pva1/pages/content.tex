@@ -214,7 +214,7 @@ rows belonging to the same group are next to each other.
 
 Oftentimes, we do not require all the details of all the rows in a group.
 Instead, we only want a summary of our grouped data, also known as aggregation.
-On p. 48, while listing features missing in traditional relational algebra, \cite{Aren22}
+On p. 48, while listing features missing in basic relational algebra, \cite{Aren22}
 find a great explanation for aggregation and grouping:
 
 \begin{quote}
@@ -225,16 +225,102 @@ of all employees in a company. Grouping allows such columns to be split
 according to a value of some attribute (...)
 \end{quote}
 They also formally define and analyze aggregation as an extension to relational algebra,
-but we will
+but we will instead use the (easier) aggregation operator presented in \cite{Elma89},
+section 8.4.2. Let's describe our aggregation goal with it:
+
+\[
+    _{\text{pname}}\mathfrak{I}_{\text{SUM amount}}(\text{Transaction})
+\]
+
+$\mathfrak{I}$ is the aggregation operator, pname is the grouping column 
+and SUM is the aggregation function we are using. For each group of
+Transaction, the expression sums up the column "amount"
+of all rows in that group.
+
+Processing this statement could be, similar to \ref{Split into groups},
+done by sorting the rows of Transaction by pname. One could, however,
+think of other algorithms. For example:
+store the name and current sum of each group while iterating over
+the rows in Transaction. We can say that this expression
+has more opportunity for being optimized for memory usage.
+
+\subsection{External sorting} \label{External Sorting}
+
+Usually, a database either sorts the columns or creates a hashtable
+when eliminating duplicated rows or performing aggregation (\cite{Edga}).
+Let's focus on the sorting for now. So if we want to aggregate on groups
+with limited memory, we need to sort with limited RAM.
+
+Sorting data bigger than the available memory can be achieved by buffering
+temporary results to the storage. Such procedure is also known as external
+sorting, since it uses external files to store part of its state. Usually,
+a sort-merge strategy is used. \cite{Elma89} describe such an algorithm
+in section 18.2. \\ \\
+For our paper, there are two important conclusions:
+\begin{enumerate}
+    \item Aggregating on large data will most likely require sorting.
+    \item We need external sorting strategies to sort data bigger than
+the available memory.
+\end{enumerate}
+Most Relational \gls{DBMS} support external sorting. In our simulation,
+we will see whether MySQL will use such kind of technique to perform
+aggregation on large data.
+
+\subsection{PowerShell's sorting algorithm}
+
+So let's have a look at PowerShell's \verb+Group-Object+ command.
+The Microsoft documentation \cite{docPSGO} for the Group-Object
+command doesn't elaborate on the underlying algorithm used.
+It does, however, reference the return type.
+\verb+Group-Object+ either returns an instance of type
+\verb+GroupInfo+ (see \cite{docPSGI})
+or a \verb+hashtable+ (see \cite{docPSHT}).
+
+Reading their documentations, what both these structures have in common
+is that they are storing all elements from all groups in memory. This means,
+\verb+Group-Object+ is splitting an input list into subgroups,
+as defined in \ref{Split into groups}. The underlying data structures
+don't make use of external sorting strategies either, as they are
+holding the elements in memory. This is why PowerShell crashes when
+trying to group data bigger than the available memory.
 
 \newpage
 
 \section{Simulation}
 
 \subsection{Methods}
-\subsection{Implementation}
-\subsection{Results}
 
-\section{Conclusion}
-\subsection{Comparison}
-\subsection{Future Work}
+We use the following methods to find a solution that groups large CSV data:
+
+\begin{enumerate}
+    \item We started off with a \textbf{systematic literature research}
+        to explain the bottleneck of our PowerShell implementation
+        and find an alternative solution.
+    \item We write a \textbf{test case}\footnote{We will use Pester,
+        a PowerShell Testing library.} to ensure that the new
+        MySQL implementation does indeed aggregate the data in the same way
+        our PowerShell implementation did.
+    \item We run a \textbf{simulation} of both solutions in a virtual
+        environment limited in memory. We expect the MySQL implementation
+        to run slowly but without crashes due to the external sorting
+        strategy explained in \ref{External Sorting}.
+\end{enumerate}
+
+\subsection{Generating data}
+
+For this paper, we need to implement a simple script which acts as the
+service provider introduced in \ref{Motivation}. The script
+should generate CSV data similar to the export we got from
+the service provider. Note that:
+\begin{itemize}
+    \item The generated data must be large, large enough to exceed
+        the memory.
+    \item Nevertheless, the script itself should not crash from
+        insufficient memory.
+    \item Along with the generated data, the expected result of the
+        aggregation should be provided for comparison.
+\end{itemize}
+For these reasons, we decided to let the script append a predefined
+relation to the CSV file over and over again. We will use a large
+text in the description fields to bloat the CSV file further.
+You can find the script in the appendum.
