@@ -15,6 +15,17 @@
 \tableofcontents
 \newpage
 
+\pagenumbering{roman}
+
+\addcontentsline{toc}{section}{List of Tables}
+\listoftables
+\addcontentsline{toc}{section}{List of Listings}
+\lstlistoflistings
+
+\pagebreak
+\printglossary
+\pagebreak
+
 \pagenumbering{arabic}
 \input{pages/content}
 
@@ -25,20 +36,11 @@
 
 \pagebreak
 
-\microtypesetup{protrusion=false}
-\listoffigures{}
-\listoftables{} % Anhang, Nummerierung erzwingen
-\microtypesetup{protrusion=true}
+% \microtypesetup{protrusion=false}
+% \listoffigures{}
+% \microtypesetup{protrusion=true}
 
 \clearpage
-
-\printglossary
-
-\pagebreak
-
-\lstlistoflistings
-
-\pagebreak
 
 \addcontentsline{toc}{section}{Bibliography}
 \pagestyle{fancy}

@@ -106,7 +106,7 @@ For that, we must ensure that each column
 got a unique name. Luckily, the header from our CSV export statisfies this condition
 (see listing \ref{lst:csvexport}). Let its schema be:
 
-\begin{center}
+\begin{center} \label{schema}
 \verb+Transaction [ tid, pname, amount, comment ]+
 \end{center}
 
@@ -288,9 +288,7 @@ trying to group data bigger than the available memory.
 
 \section{Experiment}
 
-\subsection{Introduction}
-
-\subsubsection{Methods}
+\subsection{Methods}
 
 We use the following methods to find a solution that groups large CSV data:
 
@@ -303,45 +301,147 @@ We use the following methods to find a solution that groups large CSV data:
         implementations on the same test data} to ensure that the new
         MySQL implementation does indeed aggregate the data in the same way
         our PowerShell implementation did.
-    \item We run an \textbf{experiment} with both solutions being in a virtual
-        environment limited in memory. We expect the MySQL implementation
+    \item We run an \textbf{experiment} where both solutions run in
+        docker containers limited in memory. We expect the MySQL implementation
         to run slowly but without crashes due to the external sorting
         strategy explained in \ref{External Sorting}.
 \end{enumerate}
 
-\subsubsection{Generating records}
+\subsection{Generating records} \label{Generating records}
 
-For this paper, we need to implement a simple script which acts as the
-service provider introduced in \ref{Motivation}. The script
-should generate CSV data similar to the export we got from
+For this paper, we need to implement simple scripts which acts as the
+service provider introduced in \ref{Motivation}. The scripts
+should generate data similar to the export we got from
 the service provider. Note that:
 \begin{itemize}
     \item The generated data must be large, large enough to exceed
         the memory.
     \item Nevertheless, the script itself should not crash from
         insufficient memory.
-    \item Along with the generated data, the expected result of the
+    \item Along with the generated data, the expected result from the
         aggregation should be provided for comparison.
 \end{itemize}
-For these reasons, we decided to let the script append a predefined
-relation to the CSV file over and over again. We will use a large
-text in the description fields to bloat the CSV file further.
-You can find the script in the appendum.
+For these reasons, we decided to let the scripts append the
+sample relation \ref{Transaction} to the CSV file / MySQL Database
+over and over again. We will use a large text in the description
+fields to bloat the CSV file further.
 
-\subsubsection{Using Docker}
+The scripts work by repeating the sample relation 400 times in memory,
+then writing this chunk of data to a CSV/SQL file for another 200 times.
+In total, we get $5*400*200=400,000$ records, which are about 709MB
+of record data. Splitting the workload into multiple I/O operations
+ensures that we can generate all this data on very limited memory.
+
+For more details, see the scripts in the appendix.
+
+\subsection{Using Docker}
+
+As explained by \cite{docContainer}, a container isolates
+an application from our operating system and files.
+It bundles the application source code and
+required dependencies together, which makes the application
+very portable as long as we got a software which can run our container.
+
+Docker does just that. Both our PowerShell and MySQL implementations
+will be created and run as Docker containers. Thus,
+the experiment will execute similar on different hosts, making
+it easy for you to repeat.
+
+Docker uses so-called Dockerfiles to define the parts of a container.
 
 \subsection{PowerShell Implementation}
 
-\subsubsection{Dockerfile}
+Let us have a look at the Dockerfile for our PowerShell implementation.
 
-\subsubsection{Entrypoint}
+\begin{lstlisting}[escapeinside={(*}{*)},numbers=left,caption=PS Dockerfile,label={lst:psdocker}]
+FROM mcr.microsoft.com/powershell:lts-7.2-ubuntu-20.04 (*\label{psdocker:image}*)
+COPY . / (*\label{psdocker:copy}*)
+RUN pwsh /Generate-CSVExport.ps1 (*\label{psdocker:gencsv}*)
+ENTRYPOINT [ "/docker-entrypoint.sh" ] (*\label{psdocker:entrypoint}*)
+\end{lstlisting}
+The container for our PowerShell implementation needs
+a PowerShell installation. We use the PowerShell Ubuntu package
+provided by \cite{dockerPS} as a base image (line \ref{psdocker:image})
+and copy two PowerShell scripts into our container (line \ref{psdocker:copy}).
+
+The first script is executed when the container image is created
+(line \ref{psdocker:gencsv}). It generates the large CSV
+file as described in \ref{Generating records}. When the container
+is running, the second script (line \ref{psdocker:entrypoint})
+will be executed:
+
+\begin{lstlisting}[language={PowerShell},escapeinside={(*}{*)},numbers=left,caption=aggregate.ps1,label={lst:psdocker}]
+$csv = Import-CSV "./export.csv" (*\label{psagg:import}*)
+$groups = $csv | Group-Object -Property pname
+$summary = @{}
+
+foreach ($group in $groups) {
+    $summary[$group.Name] = 0
+    foreach ($record in $group.Group) {
+        $summary[$group.Name] += [int] $record.amount
+    }
+}
+
+$summary (*\label{psagg:out}*)
+\end{lstlisting}
+It imports all the CSV data (line \ref{psagg:import}) generated
+before and uses \verb+Group-Object+ to group the records by their pname.
+By iterating over the groups and their members, the script calculates
+the sum of amount for all members of a group. The
+aggregation is stored in a hashlist
+\verb+{"group": <current_sum>}+ and printed out at in line \ref{psagg:out}.
+
+We can see that using \verb+Group-Object+ requires all records
+to be loaded in memory. For large CSV files, this is not efficient.
 
 \subsection{MySQL Implementation}
 
-\subsubsection{Dockerfile}
+So let us look at the MySQL implementation:
 
-\subsubsection{Entrypoint}
+\begin{lstlisting}[escapeinside={(*}{*)},numbers=left,caption=MySQL Dockerfile,label={lst:sqldocker}]
+FROM ubuntu/mysql (*\label{sqldocker:image}*)
+ENV MYSQL_ROOT_PASSWORD="root"
+ENV MYSQL_DATABASE="grouping"
+COPY . / (*\label{sqldocker:copy}*)
+RUN /generate-db.sh (*\label{sqldocker:gensql}*)
+\end{lstlisting}
+Line \ref{sqldocker:image} references the MySQL image from \cite{dockerMySQL},
+based off Ubuntu. We chose Ubuntu for both PowerShell and MySQL to
+make the containers more comparable.
+
+We also provide environment variables for the \gls{DBMS} root password
+and database name. These variables will be used by the base image.
+
+After copying the generation script, we execute it
+(lines \ref{sqldocker:copy}-\ref{sqldocker:gensql}).
+The script creates:
+\begin{enumerate}
+    \item An SQL file \path{a-init-schema.sql} for initializing the schema of our database.
+        We use the schema defined in \ref{schema} and only add
+        the mandatory data types \verb+VARCHAR+ and \verb+INT+.
+        We chose the column tid as the primary key.
+    \item A bunch of identical SQL files \path{b-init-rows-<i>.sql},
+        all inserting the same
+        rows into our database over and over again.
+    \item A bash script \path{c-run-query.sh} which performs the
+        aggregation query once the initialization is done.
+\end{enumerate}
+All files are written to \path{/docker-entrypoint-initdb.d}
+and prefixed with a-c to specify the order of execution.
+Like the documentation suggests, the MySQL base image does then
+run the scripts in alphabetical order once the \gls{DBMS}
+has started. From here, it is easy to run the experiment.
 
 \subsection{Running the experiment}
 
+\paragraph{Preconditions:}
+Docker is installed. A terminal is opened in a directory
+with all files needed for the PS or MySQL implementation.
+
 \section{Conclusion}
+
+\subsection{Findings}
+
+\subsection{Evaluation}
+
+\subsection{Future Work}
