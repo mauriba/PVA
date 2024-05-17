@@ -436,12 +436,79 @@ has started. From here, it is easy to run the experiment.
 
 \paragraph{Preconditions:}
 Docker is installed. A terminal is opened in a directory
-with all files needed for the PS or MySQL implementation.
+with all files needed for the PowerShell or MySQL implementation. \\\\
+We will turn the Dockerfile into a docker image and use it to
+run a container with these two commands:
 
-\section{Conclusion}
+\begin{lstlisting}[language={bash},escapeinside={(*}{*)},numbers=left,caption=Run experiment,label={lst:rundocker}]
+docker build -t <tag> .
+docker run --memory 1000M --memory-swap 1000M <tag>
+\end{lstlisting}
+Note that \verb+<tag>+ is just a tag for the image to easily reference it.
+We could as well look into docker to find the id of the image and use that.
+
+\verb+--memory+ limits the maximum amount of memory
+a container can use. \verb+--memory+, on the other hand, also limits
+the size of \gls{swap} files. By setting both parameters to the same value,
+we ensure that there is no \gls{swap} file being used at all, thereby
+enforcing memory constraints (see \cite{dockerMem}
+for reference). 1000M (Megabytes) is a good start value
+for our experiments: It is lower than what the OS along with the 403.52MB
+CSV export need to be loaded, but just enough for MySQL to run and import
+all the data.
+
+Running the containers without any memory constraint results in the following
+summary (compare the container output with the following table to proof
+that the implementation is working correctly):
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        pname & SUM(amount) \\ \hline\hline
+        Alice & $0$ \\ \hline
+        Bob   & $160,000$ \\ \hline
+        Carl  & $0$ \\ \hline
+        Dan   & $240,000$ \\ \hline
+    \end{tabular}
+    \caption{Result of aggregation}
+    \label{Result of aggregation}
+\end{table}
+
+\newpage
+
+\section{Discussion}
+
+\subsection{Evaluation}
+
+We have run the PowerShell container four, the MySQL container two times.
+While that is not a representative number, the isolation of our experiment
+within docker containers indicates that container crashes indeed occure
+purely because of our application, or more precisely, because a given implementation
+was not able to perform the grouping operation on such low RAM.
+
+Yet these experiments are just little indications and do neither measure
+the probability of a grouping operation to succeed, nor the minimum amount
+of memory needed to consistently finish the aggregation.
+
+Moreover, as we have not looked at the underlying implementation or at least log
+outputs from MySQL and PowerShell, these experiments do not fully proof our assumptions.
+
+Precisely, we do not know if MySQL actually used an external sorting algorithm
+as explored in \ref{External Sorting}. We argue that MySQL must have stored parts
+of its calculation to the disk, because the available memory was \textit{probably}
+lower than the $403.25$M the CSV data consumes. But we have not measured
+the memory usage and do not know how much the OS and other processes actually occupied.
 
 \subsection{Findings}
 
-\subsection{Evaluation}
+
+
+This experiment is a very basic example of grouping large data. Of course,
+the data mentioned in \ref{Motivation} is far more complex, and so was
+the aggregation process. Nevertheless, the principles of this experiment still apply:
+simple grouping commands like PowerShell's \verb+Group-Object+ command
+are not able to handle large data. Only by using external sorting strategies,
+MySQL manages to aggregate on data much larger than the available memory.
 
 \subsection{Future Work}
