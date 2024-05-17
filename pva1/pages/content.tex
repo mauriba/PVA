@@ -19,7 +19,7 @@ Each file contained two sheets: one with an aggregated monthly overview and the 
 individual records of that particular group.
 % For this paper, we will focus on the aggregation.
 In \ref{Grouping}, we will explain why those
-two sheets require grouping, but only the latter requires every particular record to be stored
+two sheets require grouping, but only the latter requires every particular group member to be stored
 (in memory or storage).
 
 % TODO: Result figure
@@ -31,13 +31,14 @@ it was running on due to insufficient memory.
 \subsection{Main contributions}
 Based on this experience, we can define the purpose of this paper:
 \begin{itemize}
-    \item \textbf{Problem}: We need to aggregate CSV data bigger than the available memory
-    \item \textbf{Objectives}:
+    \item \textbf{Problem:} We need to aggregate CSV data bigger than the available memory
+    \item \textbf{Objectives:}
     \begin{enumerate}
         \item Find a solution that can group large CSV data
-        \item Proof by tests and simulation that the solution works
+        \item Proof that the solution works by running an
+            experiment with data bigger than the available memory
     \end{enumerate}
-    \item \textbf{Questions}:
+    \item \textbf{Questions:}
     \begin{enumerate}
         \item Why does the \verb+Group-Object+ command not work on limited memory?
         \item What are requirements for a grouping algorithm in order to run on low memory?
@@ -57,11 +58,10 @@ It has the following characteristics:
     \item each row starts on a new line
     \item the values for each column are separated by a delimiter (usually a comma)
     \item there may be a header line those values specify the names of the columns
-    \item whitespaces other than line breaks for 1. are ignored, unless part of a value
 \end{enumerate}
 Our CSV export is structured in exactly this way. Let it be\footnote{
 In this paper, we will use a simplification and abstraction of the original
-data mentioned in \ref{Motivation}. The "$\dots$" indicates that
+data mentioned in \ref{Motivation}. The "$\dots$" indicate that
 it is indeed a large CSV with many more records.}:
 
 \begin{lstlisting}[escapeinside={(*}{*)},numbers=left,caption=CSV export,label={lst:csvexport}]
@@ -193,14 +193,14 @@ results in a relation containing all group names (see table \ref{Projection of p
 \subsubsection{Split into groups} \label{Split into groups}
 
 We can use these group names to split the relation into distinct sub-relations consisting
-only of the elements with the same group name:
+only of the elements with the same group name
 
 \[
     G := \set{\sigma_{\text{pname}=x}(\text{Transaction})
         | (\text{pname}, x) \in \pi_{\text{pname}}(\text{Transaction})}
 \]
 
-with $G$ being a set of (sub)relations. We will refer to this kind of grouping as
+being a set of (sub)relations. We will refer to this kind of grouping as
 \textbf{split into groups}. An algorithm which splits a relation into groups hence
 must put every row into its respective group. In other words: a
 split into groups requires all rows to be loaded in memory (or storage).
@@ -263,7 +263,7 @@ For our paper, there are two important conclusions:
 the available memory.
 \end{enumerate}
 Most Relational \gls{DBMS} support external sorting. In our simulation,
-we will see whether MySQL will use such kind of technique to perform
+we will see that MySQL will use such kind of technique to perform
 aggregation on large data.
 
 \subsection{PowerShell's sorting algorithm}
@@ -280,15 +280,17 @@ Reading their documentations, what both these structures have in common
 is that they are storing all elements from all groups in memory. This means,
 \verb+Group-Object+ is splitting an input list into subgroups,
 as defined in \ref{Split into groups}. The underlying data structures
-don't make use of external sorting strategies either, as they are
+do not make use of external sorting strategies either, as they are
 holding the elements in memory. This is why PowerShell crashes when
 trying to group data bigger than the available memory.
 
 \newpage
 
-\section{Simulation}
+\section{Experiment}
 
-\subsection{Methods}
+\subsection{Introduction}
+
+\subsubsection{Methods}
 
 We use the following methods to find a solution that groups large CSV data:
 
@@ -296,17 +298,18 @@ We use the following methods to find a solution that groups large CSV data:
     \item We started off with a \textbf{systematic literature research}
         to explain the bottleneck of our PowerShell implementation
         and find an alternative solution.
-    \item We write a \textbf{test case}\footnote{We will use Pester,
-        a PowerShell Testing library.} to ensure that the new
+    \item We build a \textbf{test}\footnote{For simplification,
+        we just compare the aggregation result from both
+        implementations on the same test data} to ensure that the new
         MySQL implementation does indeed aggregate the data in the same way
         our PowerShell implementation did.
-    \item We run a \textbf{simulation} of both solutions in a virtual
+    \item We run an \textbf{experiment} with both solutions being in a virtual
         environment limited in memory. We expect the MySQL implementation
         to run slowly but without crashes due to the external sorting
         strategy explained in \ref{External Sorting}.
 \end{enumerate}
 
-\subsection{Generating data}
+\subsubsection{Generating records}
 
 For this paper, we need to implement a simple script which acts as the
 service provider introduced in \ref{Motivation}. The script
@@ -324,3 +327,21 @@ For these reasons, we decided to let the script append a predefined
 relation to the CSV file over and over again. We will use a large
 text in the description fields to bloat the CSV file further.
 You can find the script in the appendum.
+
+\subsubsection{Using Docker}
+
+\subsection{PowerShell Implementation}
+
+\subsubsection{Dockerfile}
+
+\subsubsection{Entrypoint}
+
+\subsection{MySQL Implementation}
+
+\subsubsection{Dockerfile}
+
+\subsubsection{Entrypoint}
+
+\subsection{Running the experiment}
+
+\section{Conclusion}
