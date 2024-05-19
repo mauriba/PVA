@@ -11,30 +11,27 @@ already exist. Still, they must be maintained, verified and optimized to ensure 
 quality and efficiency.
 
 \subsection{Motivation} \label{Motivation}
-At q.beyond, we had to deal with just that: large monthly CSV exports
+At q.beyond, we had to deal with just that: large monthly \gls{CSV} exports
 (each file contains the data of a month) by a third-party service provider
 that our process was operating on. For verification, we collected the exports from a whole year,
-grouped the records by a column and exported each group as an individual Excel file.
+grouped their records by a column and exported each group as an individual Excel file.
 Each file contained two sheets: one with an aggregated monthly overview and the other with all the
 individual records of that particular group.
-% For this paper, we will focus on the aggregation.
 In \ref{Grouping}, we will explain why those
 two sheets require grouping, but only the latter requires every particular group member to be stored
 (in memory or storage).
 
-% TODO: Result figure
-
-We ended up writing a PowerShell\footnote{A scripting language coming with Windows. Used for administrative and automation tasks.}
+We ended up writing a \gls{PowerShell}
 Script, which, in our first draft, crashed the \gls{AVD}
 it was running on due to insufficient memory.
 
 \subsection{Main contributions}
 Based on this experience, we can define the purpose of this paper:
 \begin{itemize}
-    \item \textbf{Problem:} We need to aggregate CSV data bigger than the available memory
+    \item \textbf{Problem:} We need to aggregate \gls{CSV} data bigger than the available memory
     \item \textbf{Objectives:}
     \begin{enumerate}
-        \item Find a solution that can group large CSV data
+        \item Find a solution that can group large \gls{CSV} data
         \item Proof that the solution works by running an
             experiment with data bigger than the available memory
     \end{enumerate}
@@ -44,14 +41,14 @@ Based on this experience, we can define the purpose of this paper:
         \item What are requirements for a grouping algorithm in order to run on low memory?
     \end{enumerate}
 \end{itemize}
-As an alternative solution, we will consider MySQL, a \gls{DBMS}.
+As an alternative solution, we will consider \gls{MySQL}, a \gls{DBMS}.
 
 \newpage
 \section{Background}
 
 \subsection{Comma-Separated Values (CSV)}
 
-Specified in \cite{rfc4180}, CSV is a file format for storing a table in plain text.
+Specified in \cite{rfc4180}, \gls{CSV} is a file format for storing a table in plain text.
 It has the following characteristics:
 
 \begin{enumerate}
@@ -59,10 +56,10 @@ It has the following characteristics:
     \item the values for each column are separated by a delimiter (usually a comma)
     \item there may be a header line those values specify the names of the columns
 \end{enumerate}
-Our CSV export is structured in exactly this way. Let it be\footnote{
+Our \gls{CSV} export is structured in exactly this way. Let it be\footnote{
 In this paper, we will use a simplification and abstraction of the original
 data mentioned in \ref{Motivation}. The "$\dots$" indicate that
-it is indeed a large CSV with many more records.}:
+it is indeed a large \gls{CSV} with many more records.}:
 
 \begin{lstlisting}[escapeinside={(*}{*)},numbers=left,caption=CSV export,label={lst:csvexport}]
 tid,    pname,  amount,     comment (*\label{csvexport:header}*)
@@ -74,17 +71,15 @@ tid,    pname,  amount,     comment (*\label{csvexport:header}*)
 ...
 \end{lstlisting}
 
-%TODO: Add csv export
-
 \subsection{Relational Model}
 
-Introduced by E. F. \cite{Codd70}, the relational model is a mathematical
+Introduced by E. F. Codd in \cite{Codd70}, the relational model is a mathematical
 description of data management, structuring data in tuples and tuples
 in relations. A relational algebra is provided to act as a simple
 mathematical query language. Industrial query languages
 like SQL later implemented the features described in the relational model.
 
-As further explained by \cite{Aren22}, a relation
+As further explained in \cite{Aren22}, a relation
 is just a pair of a relation schema and a set of tuples (the rows of the relation).
 
 \subsubsection{Relational Schema}
@@ -103,7 +98,7 @@ the column name $c_n$ and the value $a_n$ assigned to it (named perspective).
 
 In this paper, we will use relations as described in the named perspective.
 For that, we must ensure that each column
-got a unique name. Luckily, the header from our CSV export statisfies this condition
+got a unique name. Luckily, the header from our \gls{CSV} export statisfies this condition
 (see listing \ref{lst:csvexport}). Let its schema be:
 
 \begin{center} \label{schema}
@@ -111,13 +106,13 @@ got a unique name. Luckily, the header from our CSV export statisfies this condi
 \end{center}
 
 Note that we do not assign any types to the attributes,
-as the CSV header row only consists of attribute names.
+as the \gls{CSV} header row only consists of attribute names.
 This conforms with the understanding of the relational model
 from Schweikardt, who just assumes that the values for our columns origin from an infinite set
 containing any values for any columns.
 
 The visual representation of a relation is a table. Below figure shows the
-corresponding relation to the first 5 records of the CSV export from listing \ref{lst:csvexport}.
+corresponding relation to the first 5 records of the \gls{CSV} export from listing \ref{lst:csvexport}.
 
 \begin{table}[htbp]
     \centering
@@ -136,7 +131,8 @@ corresponding relation to the first 5 records of the CSV export from listing \re
 
 \subsubsection{Selection and Projection}
 
-In chapter 12.1, \cite{Halp08} introduces relational algebra. It includes six
+In chapter 12.1, \cite{Halp08}
+introduces relational algebra. It includes six
 comparison operators $\theta \in \Set{=, <>, <, >, \leq, \geq}$ as well as the
 three logical operators $\Set{\land, \lor, \neg}$. Furthermore, some
 language-specific operations are defined. We will focus on the selection and projection.
@@ -214,8 +210,8 @@ rows belonging to the same group are next to each other.
 
 Oftentimes, we do not require all the details of all the rows in a group.
 Instead, we only want a summary of our grouped data, also known as aggregation.
-On p. 48, while listing features missing in basic relational algebra, \cite{Aren22}
-find a great explanation for aggregation and grouping:
+While listing features missing in basic relational algebra, \cite{Aren22}
+provides a great explanation for aggregation and grouping:
 
 \begin{quote}
 An extremely common feature of SQL queries
@@ -232,29 +228,29 @@ section 8.4.2. Let's describe our aggregation goal with it:
     _{\text{pname}}\mathfrak{I}_{\text{SUM amount}}(\text{Transaction})
 \]
 
-$\mathfrak{I}$ is the aggregation operator, pname is the grouping column 
-and SUM is the aggregation function we are using. For each group of
-Transaction, the expression sums up the column "amount"
+$\mathfrak{I}$ is the aggregation operator, \verb+pname+ is the grouping column 
+and \verb+SUM+ is the aggregation function we are using. For each group of
+Transaction, the expression sums up the column \verb+amount+
 of all rows in that group.
 
 Processing this statement could be, similar to \ref{Split into groups},
 done by sorting the rows of Transaction by pname. One could, however,
 think of other algorithms. For example:
 store the name and current sum of each group while iterating over
-the rows in Transaction. We can say that this expression
-has more opportunity for being optimized for memory usage.
+the rows in Transaction.
+We see that this expression has more opportunity for being optimized.
 
 \subsection{External sorting} \label{External Sorting}
 
 Usually, a database either sorts the columns or creates a hashtable
-when eliminating duplicated rows or performing aggregation (\cite{Edga}).
+when eliminating duplicated rows or performing aggregation (see \cite{Edga}).
 Let's focus on the sorting for now. So if we want to aggregate on groups
-with limited memory, we need to sort with limited RAM.
+with limited \gls{RAM}, we need to sort with limited \gls{RAM}.
 
 Sorting data bigger than the available memory can be achieved by buffering
 temporary results to the storage. Such procedure is also known as external
 sorting, since it uses external files to store part of its state. Usually,
-a sort-merge strategy is used. \cite{Elma89} describe such an algorithm
+a sort-merge strategy is used. \cite{Elma89} describes such an algorithm
 in section 18.2. \\ \\
 For our paper, there are two important conclusions:
 \begin{enumerate}
@@ -263,12 +259,12 @@ For our paper, there are two important conclusions:
 the available memory.
 \end{enumerate}
 Most Relational \gls{DBMS} support external sorting. In our simulation,
-we will see that MySQL will use such kind of technique to perform
+we will see that \gls{MySQL} will use such kind of technique to perform
 aggregation on large data.
 
-\subsection{PowerShell's sorting algorithm}
+\subsection{PowerShell's sorting algorithm} \label{PowerShell Sorting}
 
-So let's have a look at PowerShell's \verb+Group-Object+ command.
+So let's have a look at \gls{PowerShell}'s \verb+Group-Object+ command.
 The Microsoft documentation \cite{docPSGO} for the Group-Object
 command doesn't elaborate on the underlying algorithm used.
 It does, however, reference the return type.
@@ -281,7 +277,7 @@ is that they are storing all elements from all groups in memory. This means,
 \verb+Group-Object+ is splitting an input list into subgroups,
 as defined in \ref{Split into groups}. The underlying data structures
 do not make use of external sorting strategies either, as they are
-holding the elements in memory. This is why PowerShell crashes when
+holding the elements in memory. This is why \gls{PowerShell} crashes when
 trying to group data bigger than the available memory.
 
 \newpage
@@ -290,19 +286,19 @@ trying to group data bigger than the available memory.
 
 \subsection{Methods}
 
-We use the following methods to find a solution that groups large CSV data:
+We use the following methods to find a solution that groups large \gls{CSV} data:
 
 \begin{enumerate}
     \item We started off with a \textbf{systematic literature research}
-        to explain the bottleneck of our PowerShell implementation
+        to explain the bottleneck of our \gls{PowerShell} implementation
         and find an alternative solution.
     \item We build a \textbf{test}\footnote{For simplification,
         we just compare the aggregation result from both
         implementations on the same test data} to ensure that the new
-        MySQL implementation does indeed aggregate the data in the same way
-        our PowerShell implementation did.
+        \gls{MySQL} implementation does indeed aggregate the data in the same way
+        our \gls{PowerShell} implementation did.
     \item We run an \textbf{experiment} where both solutions run in
-        docker containers limited in memory. We expect the MySQL implementation
+        docker containers limited in memory. We expect the \gls{MySQL} implementation
         to run slowly but without crashes due to the external sorting
         strategy explained in \ref{External Sorting}.
 \end{enumerate}
@@ -322,53 +318,57 @@ the service provider. Note that:
         aggregation should be provided for comparison.
 \end{itemize}
 For these reasons, we decided to let the scripts append the
-sample relation \ref{Transaction} to the CSV file / MySQL Database
+sample relation \ref{Transaction} to the \gls{CSV} file / \gls{MySQL} \gls{DB}
 over and over again. We will use a large text in the description
-fields to bloat the CSV file further.
+fields to bloat the records further.
 
 The scripts work by repeating the sample relation 400 times in memory,
-then writing this chunk of data to a CSV/SQL file for another 200 times.
-In total, we get $5*400*200=400,000$ records, which are about 709MB
-of record data. Splitting the workload into multiple I/O operations
+then writing this chunk of data to a \gls{CSV}/\gls{SQL} file for another 200 times.
+In total, we get $5*400*200=400,000$ records, which are about 403.25MB
+of record data. Splitting the workload into multiple \gls{I/O} operations
 ensures that we can generate all this data on very limited memory.
 
-For more details, see the scripts in the appendix.
+For more details, see the scripts in the appendix \ref{Appendix}.
 
 \subsection{Using Docker}
 
-As explained by \cite{docContainer}, a container isolates
+As explained on Docker's website \cite{docContainer}, a container isolates
 an application from our operating system and files.
 It bundles the application source code and
 required dependencies together, which makes the application
 very portable as long as we got a software which can run our container.
 
-Docker does just that. Both our PowerShell and MySQL implementations
+We will use Docker\footnote{More precisely, the Docker Engine, an open-source containerization software.}
+for that. Both our \gls{PowerShell} and MySQL implementations
 will be created and run as Docker containers. Thus,
 the experiment will execute similar on different hosts, making
-it easy for you to repeat.
+it easy for others to repeat.
 
 Docker uses so-called Dockerfiles to define the parts of a container.
 
 \subsection{PowerShell Implementation}
 
-Let us have a look at the Dockerfile for our PowerShell implementation.
+Let us have a look at the Dockerfile for our \gls{PowerShell} implementation.
 
 \begin{lstlisting}[escapeinside={(*}{*)},numbers=left,caption=PS Dockerfile,label={lst:psdocker}]
-FROM mcr.microsoft.com/powershell:lts-7.2-ubuntu-20.04 (*\label{psdocker:image}*)
+FROM mcr.microsoft.com/PowerShell:lts-7.2-ubuntu-20.04 (*\label{psdocker:image}*)
 COPY . / (*\label{psdocker:copy}*)
 RUN pwsh /Generate-CSVExport.ps1 (*\label{psdocker:gencsv}*)
 ENTRYPOINT [ "/docker-entrypoint.sh" ] (*\label{psdocker:entrypoint}*)
 \end{lstlisting}
-The container for our PowerShell implementation needs
-a PowerShell installation. We use the PowerShell Ubuntu package
-provided by \cite{dockerPS} as a base image (line \ref{psdocker:image})
-and copy two PowerShell scripts into our container (line \ref{psdocker:copy}).
+The container for our \gls{PowerShell} implementation needs
+a \gls{PowerShell} installation. We use the \gls{PowerShell} Ubuntu package \cite{dockerPS}
+as a base image (line \ref{psdocker:image})
+and copy two \gls{PowerShell} scripts into our container (line \ref{psdocker:copy}).
 
 The first script is executed when the container image is created
-(line \ref{psdocker:gencsv}). It generates the large CSV
-file as described in \ref{Generating records}. When the container
-is running, the second script (line \ref{psdocker:entrypoint})
-will be executed:
+(line \ref{psdocker:gencsv}). It generates the large \gls{CSV}
+file as described in \ref{Generating records}. Note that we
+decided to ignore the \verb+tid+ attribute, as we do not
+need a Primary Key in \gls{CSV}.
+
+When the container is running, the second script
+(line \ref{psdocker:entrypoint}) will be executed:
 
 \begin{lstlisting}[language={PowerShell},escapeinside={(*}{*)},numbers=left,caption=aggregate.ps1,label={lst:psdocker}]
 $csv = Import-CSV "./export.csv" (*\label{psagg:import}*)
@@ -384,19 +384,19 @@ foreach ($group in $groups) {
 
 $summary (*\label{psagg:out}*)
 \end{lstlisting}
-It imports all the CSV data (line \ref{psagg:import}) generated
-before and uses \verb+Group-Object+ to group the records by their pname.
+It imports all the \gls{CSV} data (line \ref{psagg:import}) that we generated
+before and uses \verb+Group-Object+ to group the records by their \verb+pname+.
 By iterating over the groups and their members, the script calculates
 the sum of amount for all members of a group. The
 aggregation is stored in a hashlist
 \verb+{"group": <current_sum>}+ and printed out at in line \ref{psagg:out}.
 
-We can see that using \verb+Group-Object+ requires all records
-to be loaded in memory. For large CSV files, this is not efficient.
+We can see that \verb+Group-Object+ requires all records
+to be loaded in memory. For large \gls{CSV} files, this is not efficient.
 
 \subsection{MySQL Implementation}
 
-So let us look at the MySQL implementation:
+So let us look at the \gls{MySQL} implementation:
 
 \begin{lstlisting}[escapeinside={(*}{*)},numbers=left,caption=MySQL Dockerfile,label={lst:sqldocker}]
 FROM ubuntu/mysql (*\label{sqldocker:image}*)
@@ -405,8 +405,8 @@ ENV MYSQL_DATABASE="grouping"
 COPY . / (*\label{sqldocker:copy}*)
 RUN /generate-db.sh (*\label{sqldocker:gensql}*)
 \end{lstlisting}
-Line \ref{sqldocker:image} references the MySQL image from \cite{dockerMySQL},
-based off Ubuntu. We chose Ubuntu for both PowerShell and MySQL to
+Line \ref{sqldocker:image} references the \gls{MySQL} image \cite{dockerMySQL},
+based off Ubuntu. We chose Ubuntu for both \gls{PowerShell} and \gls{MySQL} to
 make the containers more comparable.
 
 We also provide environment variables for the \gls{DBMS} root password
@@ -426,9 +426,16 @@ The script creates:
     \item A bash script \path{c-run-query.sh} which performs the
         aggregation query once the initialization is done.
 \end{enumerate}
+The aggregation query is the equivalent to the operation implemented in \gls{PowerShell},
+summing up the \verb+amount+s for each group grouped by \verb+pname+:
+\begin{lstlisting}[language={SQL},escapeinside={(*}{*)},numbers=left,caption=MySQL aggregation,label={lst:sqlagg}]
+SELECT pname, SUM(amount)
+    FROM Transaction
+    GROUP BY pname
+\end{lstlisting}
 All files are written to \path{/docker-entrypoint-initdb.d}
 and prefixed with a-c to specify the order of execution.
-Like the documentation suggests, the MySQL base image does then
+Like the documentation suggests, the \gls{MySQL} base image does then
 run the scripts in alphabetical order once the \gls{DBMS}
 has started. From here, it is easy to run the experiment.
 
@@ -436,7 +443,7 @@ has started. From here, it is easy to run the experiment.
 
 \paragraph{Preconditions:}
 Docker is installed. A terminal is opened in a directory
-with all files needed for the PowerShell or MySQL implementation. \\\\
+with all files needed for the \gls{PowerShell} or \gls{MySQL} implementation. \\\\
 We will turn the Dockerfile into a docker image and use it to
 run a container with these two commands:
 
@@ -451,15 +458,14 @@ We could as well look into docker to find the id of the image and use that.
 a container can use. \verb+--memory+, on the other hand, also limits
 the size of \gls{swap} files. By setting both parameters to the same value,
 we ensure that there is no \gls{swap} file being used at all, thereby
-enforcing memory constraints (see \cite{dockerMem}
-for reference). 1000M (Megabytes) is a good start value
-for our experiments: It is lower than what the OS along with the 403.52MB
-CSV export need to be loaded, but just enough for MySQL to run and import
+enforcing memory constraints (see \cite{dockerMem}). 1000M (Megabytes) is a good start value
+for our experiments: It is most likely lower than what the \gls{OS} along with the 403.52MB
+\gls{CSV} export need to be loaded, but just enough for \gls{MySQL} to run and import
 all the data.
 
-Running the containers without any memory constraint results in the following
-summary (compare the container output with the following table to proof
-that the implementation is working correctly):
+Running the containers with enough memory results in the summary shown
+below. Compare the container output with the following table to proof
+that the implementation is working correctly:
 
 \begin{table}[htbp]
     \centering
@@ -479,36 +485,84 @@ that the implementation is working correctly):
 
 \section{Discussion}
 
-\subsection{Evaluation}
+\subsection{Evaluation} \label{Evaluation}
 
-We have run the PowerShell container four, the MySQL container two times.
+We have run the \gls{PowerShell} container four, the \gls{MySQL} container two times.
 While that is not a representative number, the isolation of our experiment
 within docker containers indicates that container crashes indeed occure
 purely because of our application, or more precisely, because a given implementation
-was not able to perform the grouping operation on such low RAM.
+was not able to perform the grouping operation on such low \gls{RAM}.
 
 Yet these experiments are just little indications and do neither measure
 the probability of a grouping operation to succeed, nor the minimum amount
 of memory needed to consistently finish the aggregation.
 
 Moreover, as we have not looked at the underlying implementation or at least log
-outputs from MySQL and PowerShell, these experiments do not fully proof our assumptions.
+outputs from \gls{MySQL} and \gls{PowerShell}, these experiments do not fully proof our assumptions.
 
-Precisely, we do not know if MySQL actually used an external sorting algorithm
-as explored in \ref{External Sorting}. We argue that MySQL must have stored parts
+Precisely, we do not know if \gls{MySQL} actually used an external sorting algorithm
+as explored in \ref{External Sorting}. We argue that \gls{MySQL} must have stored parts
 of its calculation to the disk, because the available memory was \textit{probably}
-lower than the $403.25$M the CSV data consumes. But we have not measured
-the memory usage and do not know how much the OS and other processes actually occupied.
+lower than the $403.25$M the \gls{CSV} data consumes. But we have not measured
+the memory usage and do not know how much the \gls{OS} and other processes actually occupied.
 
 \subsection{Findings}
 
+Running the \gls{PowerShell} implementation yielded the following results:
 
+\begin{itemize}
+    \item \textbf{Import CSV:} The aggregation crashes on 1000MB and 1500MB when
+        trying to import the whole \gls{CSV} file.
 
+    \item \textbf{Group-Object:} The aggregation crashes on 1700MB and works on 1800MB
+    when trying to group the records imported before.
+\end{itemize}
+Not only did we proof that \gls{PowerShell} needs a wasteful amount of memory to
+import the whole \gls{CSV} file. If we compare the numbers of 1500MB (when the import
+still crashed) and 1800MB (when the grouping succeeded), we can also see that
+\verb+Group-Object+ has less than $1800-1500=300$MB of memory to perform.
+These 300MB are less than the size of the \gls{CSV} file, but we found out
+in \ref{PowerShell Sorting} that \gls{PowerShell}'S \verb+Group-Object+
+returns either a \verb+GroupInfo+ or a \verb+hashlist+ containing all records.
+How does this work?
+
+While \gls{PowerShell} does copy the imported records into their respective group,
+since they are objects, it does so \textbf{by reference} (see \cite{psRef}).
+Copying by reference is a technique where only a reference to the object
+itself is copied. Now both variables point to the same object, thus any change
+to the copy would be reflected by the original. \\ \\
+Compare this to the results of the \gls{MySQL} implementation:
+\begin{itemize}
+    \item \textbf{Startup:} Initialization of the DB and inserting 400,000
+        records takes significantly more time.
+    \item \textbf{Crash:} The implementation crashes at 700MB.
+    \item \textbf{Success:} The implementation returns the correct sums at 1000MB.
+\end{itemize}
+Given that both implementations are based off Ubuntu, it is surprising
+that \gls{MySQL} achieves aggregation with 1000MB. \gls{PowerShell} needs more
+memory just to load the same dataset into memory. This is why we assume
+that the dataset is larger than the available memory (it was for \gls{PowerShell}),
+and that \gls{MySQL} manages this by using external sorting strategies to group the data. \\ \\
 This experiment is a very basic example of grouping large data. Of course,
 the data mentioned in \ref{Motivation} is far more complex, and so was
 the aggregation process. Nevertheless, the principles of this experiment still apply:
-simple grouping commands like PowerShell's \verb+Group-Object+ command
+simple grouping commands like \gls{PowerShell}'s \verb+Group-Object+ command
 are not able to handle large data. Only by using external sorting strategies,
-MySQL manages to aggregate on data much larger than the available memory.
+\gls{MySQL} manages to aggregate data much larger than the available memory.
 
 \subsection{Future Work}
+As explained in \ref{Evaluation}, the results from this experiment are not
+certain. The experiment must be turned into a series of experiments in order
+to find a statistic significance and a minimum amount of \gls{RAM} needed
+for our grouping operation. Furthermore, monitoring tools could be used
+to examine how much \gls{RAM} of the container is actually assigned to our
+\gls{MySQL}/\gls{PowerShell} implementation.
+
+Comparing a simple, versatile \gls{PowerShell} command to a full-featured \gls{DBMS}
+is not fair. A future study could focus on more specialized libraries
+or frameworks for grouping data in \gls{PowerShell}.
+
+Usually, the analysis of large data is done for a company goal.
+Communicating results and collaborating with other people
+might require visualization. In fact, this is what our company is going to
+do next: build a \gls{PowerBI} visialization of the data mentioned in \ref{Motivation}.

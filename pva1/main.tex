@@ -9,7 +9,6 @@
 
 \input{pages/cover}
 \input{pages/disclaimer}
-\input{pages/abstract}
 
 \newpage
 \tableofcontents
@@ -17,9 +16,11 @@
 
 \pagenumbering{roman}
 
+\input{pages/abstract}
+
 \addcontentsline{toc}{section}{List of Tables}
 \listoftables
-\addcontentsline{toc}{section}{List of Listings}
+\addcontentsline{toc}{section}{Listings}
 \lstlistoflistings
 
 \pagebreak
@@ -45,7 +46,8 @@
 \addcontentsline{toc}{section}{Bibliography}
 \pagestyle{fancy}
 
-\bibliographystyle{language-dt} %using language.bst
+% \bibliographystyle{language-dt} %using language.bst
+\bibliographystyle{IEEEtran}
 \bibliography{bibliography} %bib-filename
 
 \nocite{*} %List all bib-entries
