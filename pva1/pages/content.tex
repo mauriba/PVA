@@ -298,7 +298,7 @@ We use the following methods to find a solution that groups large \gls{CSV} data
         \gls{MySQL} implementation does indeed aggregate the data in the same way
         our \gls{PowerShell} implementation did.
     \item We run an \textbf{experiment} where both solutions run in
-        docker containers limited in memory. We expect the \gls{MySQL} implementation
+        \gls{Docker} containers limited in memory. We expect the \gls{MySQL} implementation
         to run slowly but without crashes due to the external sorting
         strategy explained in \ref{External Sorting}.
 \end{enumerate}
@@ -332,19 +332,19 @@ For more details, see the scripts in the appendix \ref{Appendix}.
 
 \subsection{Using Docker}
 
-As explained on Docker's website \cite{docContainer}, a container isolates
+As explained on \gls{Docker}'s website \cite{docContainer}, a container isolates
 an application from our operating system and files.
 It bundles the application source code and
 required dependencies together, which makes the application
 very portable as long as we got a software which can run our container.
 
-We will use Docker\footnote{More precisely, the Docker Engine, an open-source containerization software.}
+We will use \gls{Docker}\footnote{More precisely, the Docker Engine, an open-source containerization software.}
 for that. Both our \gls{PowerShell} and MySQL implementations
-will be created and run as Docker containers. Thus,
+will be created and run as \gls{Docker} containers. Thus,
 the experiment will execute similar on different hosts, making
 it easy for others to repeat.
 
-Docker uses so-called Dockerfiles to define the parts of a container.
+\gls{Docker} uses so-called Dockerfiles to define the parts of a container.
 
 \subsection{PowerShell Implementation}
 
@@ -442,9 +442,9 @@ has started. From here, it is easy to run the experiment.
 \subsection{Running the experiment}
 
 \paragraph{Preconditions:}
-Docker is installed. A terminal is opened in a directory
+\gls{Docker} is installed. A terminal is opened in a directory
 with all files needed for the \gls{PowerShell} or \gls{MySQL} implementation. \\\\
-We will turn the Dockerfile into a docker image and use it to
+We will turn the Dockerfile into a \gls{Docker} image and use it to
 run a container with these two commands:
 
 \begin{lstlisting}[language={bash},escapeinside={(*}{*)},numbers=left,caption=Run experiment,label={lst:rundocker}]
@@ -452,7 +452,7 @@ docker build -t <tag> .
 docker run --memory 1000M --memory-swap 1000M <tag>
 \end{lstlisting}
 Note that \verb+<tag>+ is just a tag for the image to easily reference it.
-We could as well look into docker to find the id of the image and use that.
+We could as well look into \gls{Docker} to find the id of the image and use that.
 
 \verb+--memory+ limits the maximum amount of memory
 a container can use. \verb+--memory+, on the other hand, also limits
@@ -489,7 +489,7 @@ that the implementation is working correctly:
 
 We have run the \gls{PowerShell} container four, the \gls{MySQL} container two times.
 While that is not a representative number, the isolation of our experiment
-within docker containers indicates that container crashes indeed occure
+within \gls{Docker} containers indicates that container crashes indeed occure
 purely because of our application, or more precisely, because a given implementation
 was not able to perform the grouping operation on such low \gls{RAM}.
 
