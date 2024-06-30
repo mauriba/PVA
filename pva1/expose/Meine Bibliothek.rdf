@@ -1,0 +1,471 @@
+<rdf:RDF
+ xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+ xmlns:z="http://www.zotero.org/namespaces/export#"
+ xmlns:dc="http://purl.org/dc/elements/1.1/"
+ xmlns:foaf="http://xmlns.com/foaf/0.1/"
+ xmlns:bib="http://purl.org/net/biblio#"
+ xmlns:dcterms="http://purl.org/dc/terms/"
+ xmlns:prism="http://prismstandard.org/namespaces/1.2/basic/"
+ xmlns:vcard="http://nwalsh.com/rdf/vCard#">
+    <rdf:Description rdf:about="https://www.rfc-editor.org/info/rfc4180">
+        <z:itemType>document</z:itemType>
+        <dc:publisher>
+            <foaf:Organization>
+               <foaf:name>RFC Editor</foaf:name>
+            </foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Shafranovich</foaf:surname>
+                        <foaf:givenName>Yakov</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dc:title>Common Format and MIME Type for Comma-Separated Values (CSV) Files</dc:title>
+        <dcterms:abstract>This RFC documents the format used for Comma-Separated Values (CSV) files and registers the associated MIME type &quot;text/csv&quot;. This memo provides information for the Internet community.</dcterms:abstract>
+        <dc:date>2005-10</dc:date>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>https://www.rfc-editor.org/info/rfc4180</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dc:description>Issue: 4180
+Num Pages: 8
+Series: Request for Comments
+Published: RFC 4180
+DOI: 10.17487/RFC4180</dc:description>
+    </rdf:Description>
+    <bib:Article rdf:about="https://doi.org/10.1145/362384.362685">
+        <z:itemType>journalArticle</z:itemType>
+        <dcterms:isPartOf rdf:resource="urn:issn:0001-0782"/>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Codd</foaf:surname>
+                        <foaf:givenName>E. F.</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dc:subject>composition</dc:subject>
+        <dc:subject>consistency</dc:subject>
+        <dc:subject>data bank</dc:subject>
+        <dc:subject>data base</dc:subject>
+        <dc:subject>data integrity</dc:subject>
+        <dc:subject>data organization</dc:subject>
+        <dc:subject>data structure</dc:subject>
+        <dc:subject>derivability</dc:subject>
+        <dc:subject>hierarchies of data</dc:subject>
+        <dc:subject>join</dc:subject>
+        <dc:subject>networks of data</dc:subject>
+        <dc:subject>predicate calculus</dc:subject>
+        <dc:subject>redundancy</dc:subject>
+        <dc:subject>relations</dc:subject>
+        <dc:subject>retrieval language</dc:subject>
+        <dc:subject>security</dc:subject>
+        <dc:title>A relational model of data for large shared data banks</dc:title>
+        <dcterms:abstract>Future users of large data banks must be protected from having to know how the data is organized in the machine (the internal representation). A prompting service which supplies such information is not a satisfactory solution. Activities of users at terminals and most application programs should remain unaffected when the internal representation of data is changed and even when some aspects of the external representation are changed. Changes in data representation will often be needed as a result of changes in query, update, and report traffic and natural growth in the types of stored information.Existing noninferential, formatted data systems provide users with tree-structured files or slightly more general network models of the data. In Section 1, inadequacies of these models are discussed. A model based on n-ary relations, a normal form for data base relations, and the concept of a universal data sublanguage are introduced. In Section 2, certain operations on relations (other than logical inference) are discussed and applied to the problems of redundancy and consistency in the user's model.</dcterms:abstract>
+        <dc:date>1970-06</dc:date>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>https://doi.org/10.1145/362384.362685</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dc:description>Place: New York, NY, USA
+Publisher: Association for Computing Machinery</dc:description>
+        <bib:pages>377–387</bib:pages>
+    </bib:Article>
+    <bib:Journal rdf:about="urn:issn:0001-0782">
+        <prism:volume>13</prism:volume>
+        <dc:title>Commun. ACM</dc:title>
+        <dc:identifier>DOI 10.1145/362384.362685</dc:identifier>
+        <prism:number>6</prism:number>
+        <dc:identifier>ISSN 0001-0782</dc:identifier>
+    </bib:Journal>
+    <bib:Book rdf:about="urn:isbn:0-12-373568-8">
+        <z:itemType>book</z:itemType>
+        <dc:publisher>
+            <foaf:Organization>
+                <vcard:adr>
+                    <vcard:Address>
+                       <vcard:locality>San Francisco, CA, USA</vcard:locality>
+                    </vcard:Address>
+                </vcard:adr>
+                <foaf:name>Morgan Kaufmann Publishers Inc.</foaf:name>
+            </foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Halpin</foaf:surname>
+                        <foaf:givenName>Terry</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Morgan</foaf:surname>
+                        <foaf:givenName>Tony</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dc:title>Information Modeling and Relational Databases</dc:title>
+        <dcterms:abstract>Information Modeling and Relational Databases, second edition, provides an introduction to ORM (Object-Role Modeling)and much more. In fact, it is the only book to go beyond introductory coverage and provide all of the in-depth instruction you need to transform knowledge from domain experts into a sound database design. This book is intended for anyone with a stake in the accuracy and efficacy of databases: systems analysts, information modelers, database designers and administrators, and programmers. Terry Halpin, a pioneer in the development of ORM, blends conceptual information with practical instruction that will let you begin using ORM effectively as soon as possible. Supported by examples, exercises, and useful background information, his step-by-step approach teaches you to develop a natural-language-based ORM model, and then, where needed, abstract ER and UML models from it. This book will quickly make you proficient in the modeling technique that is proving vital to the development of accurate and efficient databases that best meet real business objectives.*Presents the most indepth coverage of Object-Role Modeling available anywhere, including a thorough update of the book for ORM2, as well as UML2 and E-R (Entity-Relationship) modeling. *Includes clear coverage of relational database concepts, and the latest developments in SQL and XML, including a new chapter on the impact of XML on information modeling, exchange and transformation. * New and improved case studies and exercises are provided for many topics. * The book's associated web site provides answers to exercises, appendices, advanced SQL queries, and links to downloadable ORM tools.</dcterms:abstract>
+        <dc:date>2008</dc:date>
+        <dc:identifier>ISBN 0-12-373568-8</dc:identifier>
+        <prism:edition>2</prism:edition>
+    </bib:Book>
+    <bib:Book rdf:about="#item_14">
+        <z:itemType>book</z:itemType>
+        <dc:publisher>
+            <foaf:Organization>
+                <vcard:adr>
+                    <vcard:Address>
+                       <vcard:locality>San Francisco, CA, USA</vcard:locality>
+                    </vcard:Address>
+                </vcard:adr>
+                <foaf:name>Santiago Paris Bayreuth Edinburgh</foaf:name>
+            </foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Arenas</foaf:surname>
+                        <foaf:givenName>Marcelo</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Barcel´o</foaf:surname>
+                        <foaf:givenName>Pablo</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Libkin</foaf:surname>
+                        <foaf:givenName>Leonid</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Martens</foaf:surname>
+                        <foaf:givenName>Wim</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Pieris</foaf:surname>
+                        <foaf:givenName>Andreas</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dc:title>Database Theory Querying Data</dc:title>
+        <dc:date>2022</dc:date>
+        <prism:edition>Preliminary</prism:edition>
+    </bib:Book>
+    <bib:BookSection rdf:about="urn:isbn:978-1-58488-820-8">
+        <z:itemType>bookSection</z:itemType>
+        <dcterms:isPartOf>
+            <bib:Book>
+                <dc:identifier>ISBN 978-1-58488-820-8</dc:identifier>
+                <dc:title>Algorithms and Theory of Computation Handbook: Special Topics and Techniques</dc:title>
+            </bib:Book>
+        </dcterms:isPartOf>
+        <dc:publisher>
+            <foaf:Organization>
+               <foaf:name>Chapman &amp; Hall/CRC</foaf:name>
+            </foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Schweikardt</foaf:surname>
+                        <foaf:givenName>Nicole</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Schwentick</foaf:surname>
+                        <foaf:givenName>Thomas</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Segoufin</foaf:surname>
+                        <foaf:givenName>Luc</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dc:title>Database theory: query languages</dc:title>
+        <dcterms:abstract>This chapter gives an introduction to the theoretical foundations of query languages for relational databases. It thus addresses a significant part of database theory. Special emphasis is put on the expressive power of query languages and the computational complexity of their associated evaluation and static analysis problems.</dcterms:abstract>
+        <dc:date>2010</dc:date>
+        <bib:pages>19</bib:pages>
+        <prism:edition>2</prism:edition>
+    </bib:BookSection>
+    <bib:Book rdf:about="#item_16">
+        <z:itemType>book</z:itemType>
+        <dc:publisher>
+            <foaf:Organization>
+               <foaf:name>Benjamin/Cummings</foaf:name>
+            </foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Elmasri</foaf:surname>
+                        <foaf:givenName>R.</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Navathe</foaf:surname>
+                        <foaf:givenName>S.B.</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dc:subject>dbms</dc:subject>
+        <dc:subject>oodb relational</dc:subject>
+        <dc:subject>sql</dc:subject>
+        <dc:title>Fundamentals of Database Systems</dc:title>
+        <dc:date>1989</dc:date>
+    </bib:Book>
+    <bib:Document rdf:about="https://www2.cs.sfu.ca/CourseCentral/454/johnwill/cmpt454_04queries.pdf">
+        <z:itemType>webpage</z:itemType>
+        <dcterms:isPartOf>
+           <z:Website></z:Website>
+        </dcterms:isPartOf>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Edgar</foaf:surname>
+                        <foaf:givenName>John</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dc:title>Algorithms for SQL Query Operators</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+                <rdf:value>https://www2.cs.sfu.ca/CourseCentral/454/johnwill/cmpt454_04queries.pdf</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+        <dcterms:dateSubmitted>2024-05-14</dcterms:dateSubmitted>
+        <dc:description>Publisher: Simon Fraser University</dc:description>
+    </bib:Document>
+    <rdf:Description rdf:about="https://learn.microsoft.com/de-de/powershell/module/microsoft.powershell.utility/group-object?view=powershell-7.4">
+        <z:itemType>document</z:itemType>
+        <dc:publisher>
+           <foaf:Organization><foaf:name>Microsoft</foaf:name></foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                       <foaf:surname>Microsoft</foaf:surname>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dc:title>Group-Object</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+                <rdf:value>https://learn.microsoft.com/de-de/powershell/module/microsoft.powershell.utility/group-object?view=powershell-7.4</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+    </rdf:Description>
+    <rdf:Description rdf:about="https://learn.microsoft.com/de-de/dotnet/api/microsoft.powershell.commands.groupinfo?view=powershellsdk-7.4.0">
+        <z:itemType>document</z:itemType>
+        <dc:publisher>
+           <foaf:Organization><foaf:name>Microsoft</foaf:name></foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                       <foaf:surname>Microsoft</foaf:surname>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dc:title>GroupInfo Class</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+                <rdf:value>https://learn.microsoft.com/de-de/dotnet/api/microsoft.powershell.commands.groupinfo?view=powershellsdk-7.4.0</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+    </rdf:Description>
+    <rdf:Description rdf:about="https://learn.microsoft.com/de-de/dotnet/api/system.collections.hashtable?view=net-8.0">
+        <z:itemType>document</z:itemType>
+        <dc:publisher>
+           <foaf:Organization><foaf:name>Microsoft</foaf:name></foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                       <foaf:surname>Microsoft</foaf:surname>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dc:title>Hashtable Class</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+                <rdf:value>https://learn.microsoft.com/de-de/dotnet/api/system.collections.hashtable?view=net-8.0</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+    </rdf:Description>
+    <rdf:Description rdf:about="https://docs.docker.com/guides/walkthroughs/what-is-a-container/">
+        <z:itemType>document</z:itemType>
+        <dc:publisher>
+           <foaf:Organization><foaf:name>Docker</foaf:name></foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                   <foaf:Person><foaf:surname>Docker</foaf:surname></foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dcterms:isReferencedBy rdf:resource="#item_22"/>
+        <dc:title>What is a container</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+                <rdf:value>https://docs.docker.com/guides/walkthroughs/what-is-a-container/</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+    </rdf:Description>
+    <bib:Memo rdf:about="#item_22">
+       <rdf:value>&lt;p&gt;Accessed: 2023-05-17&lt;/p&gt;</rdf:value>
+    </bib:Memo>
+    <rdf:Description rdf:about="https://hub.docker.com/_/microsoft-powershell">
+        <z:itemType>document</z:itemType>
+        <dc:publisher>
+           <foaf:Organization><foaf:name>Docker</foaf:name></foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Microsoft</foaf:surname>
+                        <foaf:givenName>Docker</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dcterms:isReferencedBy rdf:resource="#item_24"/>
+        <dc:title>microsoft-powershell - Official Image | Docker Hub</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+                <rdf:value>https://hub.docker.com/_/microsoft-powershell</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+    </rdf:Description>
+    <bib:Memo rdf:about="#item_24">
+       <rdf:value>&lt;p&gt;Accessed: 2023-05-17&lt;/p&gt;</rdf:value>
+    </bib:Memo>
+    <rdf:Description rdf:about="https://hub.docker.com/r/ubuntu/mysql">
+        <z:itemType>document</z:itemType>
+        <dc:publisher>
+           <foaf:Organization><foaf:name>Docker</foaf:name></foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                        <foaf:surname>Canonical</foaf:surname>
+                        <foaf:givenName>Docker</foaf:givenName>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dcterms:isReferencedBy rdf:resource="#item_26"/>
+        <dc:title>ubuntu/mysql - Docker Image | Docker Hub</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+               <rdf:value>https://hub.docker.com/r/ubuntu/mysql</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+    </rdf:Description>
+    <bib:Memo rdf:about="#item_26">
+       <rdf:value>&lt;p&gt;Accessed: 2023-05-17&lt;/p&gt;</rdf:value>
+    </bib:Memo>
+    <rdf:Description rdf:about="https://docs.docker.com/config/containers/resource_constraints/#limit-a-containers-access-to-memory">
+        <z:itemType>document</z:itemType>
+        <dc:publisher>
+           <foaf:Organization><foaf:name>Docker</foaf:name></foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                   <foaf:Person><foaf:surname>Docker</foaf:surname></foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dcterms:isReferencedBy rdf:resource="#item_28"/>
+        <dc:title>Runtime options with Memory, CPUs, and GPUs</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+                <rdf:value>https://docs.docker.com/config/containers/resource_constraints/#limit-a-containers-access-to-memory</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+    </rdf:Description>
+    <bib:Memo rdf:about="#item_28">
+       <rdf:value>&lt;p&gt;Accessed: 2023-05-17&lt;/p&gt;</rdf:value>
+    </bib:Memo>
+    <rdf:Description rdf:about="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_ref?view=powershell-7.4">
+        <z:itemType>document</z:itemType>
+        <dc:publisher>
+           <foaf:Organization><foaf:name>Microsoft</foaf:name></foaf:Organization>
+        </dc:publisher>
+        <bib:authors>
+            <rdf:Seq>
+                <rdf:li>
+                    <foaf:Person>
+                       <foaf:surname>Microsoft</foaf:surname>
+                    </foaf:Person>
+                </rdf:li>
+            </rdf:Seq>
+        </bib:authors>
+        <dcterms:isReferencedBy rdf:resource="#item_30"/>
+        <dc:title>about Ref - PowerShell | Microsoft Learn</dc:title>
+        <dc:identifier>
+            <dcterms:URI>
+                <rdf:value>https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_ref?view=powershell-7.4</rdf:value>
+            </dcterms:URI>
+        </dc:identifier>
+    </rdf:Description>
+    <bib:Memo rdf:about="#item_30">
+       <rdf:value>&lt;p&gt;Accessed: 2023-05-17&lt;/p&gt;</rdf:value>
+    </bib:Memo>
+    <z:Collection rdf:about="#collection_2">
+        <dc:title>PVA1</dc:title>
+        <dcterms:hasPart rdf:resource="https://www.rfc-editor.org/info/rfc4180"/>
+        <dcterms:hasPart rdf:resource="https://doi.org/10.1145/362384.362685"/>
+        <dcterms:hasPart rdf:resource="urn:isbn:0-12-373568-8"/>
+        <dcterms:hasPart rdf:resource="#item_14"/>
+        <dcterms:hasPart rdf:resource="urn:isbn:978-1-58488-820-8"/>
+        <dcterms:hasPart rdf:resource="#item_16"/>
+        <dcterms:hasPart rdf:resource="https://www2.cs.sfu.ca/CourseCentral/454/johnwill/cmpt454_04queries.pdf"/>
+        <dcterms:hasPart rdf:resource="https://learn.microsoft.com/de-de/powershell/module/microsoft.powershell.utility/group-object?view=powershell-7.4"/>
+        <dcterms:hasPart rdf:resource="https://learn.microsoft.com/de-de/dotnet/api/microsoft.powershell.commands.groupinfo?view=powershellsdk-7.4.0"/>
+        <dcterms:hasPart rdf:resource="https://learn.microsoft.com/de-de/dotnet/api/system.collections.hashtable?view=net-8.0"/>
+        <dcterms:hasPart rdf:resource="https://docs.docker.com/guides/walkthroughs/what-is-a-container/"/>
+        <dcterms:hasPart rdf:resource="https://hub.docker.com/_/microsoft-powershell"/>
+        <dcterms:hasPart rdf:resource="https://hub.docker.com/r/ubuntu/mysql"/>
+        <dcterms:hasPart rdf:resource="https://docs.docker.com/config/containers/resource_constraints/#limit-a-containers-access-to-memory"/>
+        <dcterms:hasPart rdf:resource="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_ref?view=powershell-7.4"/>
+    </z:Collection>
+</rdf:RDF>

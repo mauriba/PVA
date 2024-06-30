@@ -1,0 +1,251 @@
+\documentclass[12pt,letterpaper]{article} % a. Set paper size to Letter, 8½ x 11. 
+
+% Document settings and packages
+\input{settings}
+
+\begin{document}
+\selectlanguage{english}
+
+\input{cover}
+
+\newpage
+\tableofcontents
+\newpage
+
+\pagenumbering{arabic}
+
+\section{Topic}
+
+Performing aggregation and visualization on large datasets has become a major part of Information Technology.
+Such datasets are often exported by a third party software or service provider, and arrive in a transmittable
+format like JSON or CSV. Grouping such records can be challenging when exceeding the available
+memory of the system.
+
+We wrote a naive PowerShell script using the \verb+Group-Object+ command.
+It aimed to group the records coming from a CSV export, but ended up
+crashing the virtual environment it was running on, due to insufficient memory.
+
+\section{Main contributions} \label{Main contributions}
+Based on this experience, we can define the purpose of this work:
+\begin{itemize}
+    \item \textbf{Problem:} We need to aggregate CSV data bigger than the available memory
+    \item \textbf{Objectives:}
+    \begin{enumerate}
+        \item Find a solution that can group large CSV data
+        \item Proof that the solution works by running an
+            experiment with data bigger than the available memory
+    \end{enumerate}
+    \item \textbf{Questions:}
+    \begin{enumerate}
+        \item Why does the \verb+Group-Object+ command not work on limited memory?
+        \item What are requirements for a grouping algorithm in order to run on low memory?
+    \end{enumerate}
+\end{itemize}
+As an alternative solution, we will consider MySQL, a Database management system.
+
+\section{Background} \label{Background}
+
+Databases, especially relational databases, are the gold standard for
+storing and querying large data. After E. F. Codd presented a mathematical
+model for relational databases in 1970 \cite{Codd70}, manufactors
+adopted the principles and created SQL databases. Not only are
+they capable of grouping large data, but there are also a lot of papers
+and text books about them.
+
+\subsection{External Sorting}
+For example, \cite{Elma89} explains the external sorting strategies
+applied to large datasets. External sorting algorithms run in
+multiple so-called "runs" where parts of the data is being sorted
+and written to the disk (sorting phase). After that,
+the sorted parts are merged together in multiple iterations
+(merge phase). This way, large data can be sorted by efficiently
+making use of buffering and writing temporary results to storage.
+
+\subsection{Coma-Separated Values (CSV)}
+Specified in \cite{rfc4180}, CSV is a file format for storing a table in plain text. It has
+the following characteristics:
+1. each row starts on a new line
+2. the values for each column are separated by a delimiter (usually a comma)
+3. there may be a header line those values specify the names of the columns
+
+\subsection{Docker}
+Docker is an open platform for containerizing applications, thus making them independent
+from the underlying infrastructure. We use Docker to build two comparable implementations
+(PowerShell and MySQL) that group large CSV data.
+
+\subsection{Container}
+As explained on Docker's website \cite{docContainer}, a container isolates an application
+from our operating system and files. It bundles the application source
+code and required dependencies together, which makes the application very
+portable.
+
+\subsection{Aggregation}
+Aggregation is the process of summarizing records using numerical functions, e.g.
+calculate the total sum of a column. Aggregation also supports grouping the
+records beforehand, allowing us to summarize groups of records.
+
+But personally, I feel like \cite{Aren22} explains it better:
+\begin{quote}
+An extremely common feature of SQL queries
+is the use of aggregation and grouping. Aggregation allows numerical functions to be
+applied to entire columns, for example, to find the total salary
+of all employees in a company. Grouping allows such columns to be split
+according to a value of some attribute (...)
+\end{quote}
+
+\subsection{Relational Schema}
+\cite{Aren22} defines the relation schema based on three characteristics:
+\begin{itemize}
+    \item \textbf{relation name}: the name of the table
+    \item \textbf{relation attributes}: a list of uniquely identifiable attributes/columns
+    \item \textbf{relation arity}: the number of attributes/columns
+\end{itemize}
+\cite{Schw10} defines the relation schema more formally as a database-wide mapping
+from relation names to either their respective arity (unnamed perspective) or
+their respective attributes (named perspective). Then, a row in a relation
+is either defined as a tuple of values $a = (a_1,\dots, a_n)$ (unnamed perspective) or
+a set of pairs $a = \set{(c_1, a_1),\dots, (c_n, a_n)}$, where each pair consists of
+the column name $c_n$ and the value $a_n$ assigned to it (named perspective).
+
+The named perspective is closer to DBMS practice, but requires columns to have a unique
+name. We must ensure this in our exported CSV data to be able to make use of relational
+databases.
+
+\subsection{PowerShell}
+PowerShell is a scripting language coming with Windows. It is mainly used for
+automation and administration on Windows, but can also be used for general scripting tasks.
+
+Modern PowerShell versions can be installed on other platforms as well. We will
+use PowerShell within a ubuntu docker container for our experiment.
+
+\section{Concept}
+
+We use the following methods to find a solution that groups large CSV data:
+
+\begin{enumerate} \label{Methods}
+    \item We started off with a \textbf{systematic literature research}
+        to explain the bottleneck of our PowerShell implementation
+        and find an alternative solution.
+    \item We build a \textbf{test}\footnote{For simplification,
+        we just compare the aggregation result from both
+        implementations on the same test data} to ensure that the new
+        MySQL implementation does indeed aggregate the data in the same way
+        our PowerShell implementation did.
+    \item We run an \textbf{experiment} where both solutions run in
+        Docker containers limited in memory. We expect the MySQL implementation
+        to run slowly but without crashes due to its external sorting
+        strategy.
+\end{enumerate}
+
+\section{Planned Structure}
+
+\subsection{Lists and Abstract}
+
+\paragraph{Abstract}
+\textit{Performing aggregation and visualization on large datasets
+has become a major part of Information Technology ...}
+
+\paragraph{List of Tables}
+We are going to show some tables representing a CSV file or SQL relation.
+
+\paragraph{Listings}
+For reproducible results, we provide all the code for the experiment in listings
+or the appendix.
+
+\paragraph{Glossary}
+Because we use a lot of acronyms, e.g. "CSV", "DBMS" ...
+
+\subsection{Introduction}
+
+\paragraph{Motivation}
+Explaining the circumstances in q.beyond why we had to group large CSV data.
+\paragraph{Main contributions}
+See \ref{Main contributions}
+
+\subsection{Background}
+Using \ref{Background} and future research to explain the two different kinds of grouping
+(split into groups vs. aggregation on groups), pointing out that PowerShell's \verb+Group-Object+
+command uses the first approach. Explaining how SQL databases like MySQL could help us solve
+the problem (by using external sorting strategies). Making sure that we can use
+relational databases for the data provided by the CSV export.
+
+\subsection{Experiment}
+
+\paragraph{Methods}
+Explaining the methods used for this term paper (see \ref{Methods}).
+
+\paragraph{Generating records}
+Describing how we use an example CSV and bloat it up by repeatingly adding the same
+rows to it, ending up with a ~400MB big CSV file we can use for our experiment.
+
+\paragraph{Using Docker}
+Explaining how and why docker is being used to create a reproducible experiment
+and limiting the memory for it.
+
+\paragraph{PowerShell Implementation}
+Going into detail about the PowerShell implementation using \verb+Group-Object+
+to group the CSV records.
+
+\paragraph{MySQL Implementation}
+Going into detail about the MySQL implementation. Also providing a script for initializing
+the MySQL database with data corresponding to the contents of the CSV export.
+
+\paragraph{Running the experiment}
+Giving details about how to run the experiment.
+
+\subsection{Discussion}
+
+\paragraph{Evaluation}
+Our experiment has a lot of quirks! We mention them here.
+
+\paragraph{Findings}
+Presenting our results after running the experiment a few times.
+
+\paragraph{Future Work}
+Given the motivation of this paper and the flaws of our experiment,
+we hint to possible future work.
+
+\subsection{Ending}
+
+\paragraph{Appendix Scripts}
+Providing scripts not discussed in the term paper
+but required to run the experiment.
+
+\paragraph{Bibliography}
+
+\section{Schedule}
+
+\begin{enumerate}
+    \item Gather Topic Ideas (January 1 - January 7):
+    Spending the first week brainstorming and gathering potential topics for the term paper.
+    \item Decide on a Topic (January 8 - January 14):
+    Narrowing down the list of ideas and selecting a final topic.
+    Getting approval by my trainer.
+    \item In-depth Research (January 15 - February 4):
+    Conducting research, collecting relevant sources and information.
+    \item Learn LaTeX (February 5 - February 18):
+    Learning the basics of LaTeX.
+    \item Learn Docker (February 19 - February 25):
+    Spending time learning docker, focusing on how it can be used for the experiment.
+    \item Outline the Paper (February 26 - March 3):
+    Creating a detailed outline for the term paper.
+    \item Implementing the Experiment (March 4 - April 7)
+    Designing, implementing and running the experiment.
+    \item Writing the Paper (April 8 - April 28)
+    \item Proof-reading and Revisions (April 29 - May 12)
+    \item Finalize and Format the Document (May 13 - May 17)
+    \item Send in Finished Document (May 18)
+\end{enumerate}
+
+\clearpage
+
+\addcontentsline{toc}{section}{Bibliography}
+\pagestyle{fancy}
+
+% \bibliographystyle{language-dt} %using language.bst
+\bibliographystyle{IEEEtran}
+\bibliography{bibliography} %bib-filename
+
+\nocite{*} %List all bib-entries
+
+\end{document}

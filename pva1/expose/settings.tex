@@ -1,0 +1,102 @@
+%\usepackage[letterpaper,top=3.0cm, bottom=3.0cm, footnotesep=1.0cm]{geometry}
+\usepackage[letterpaper,left=1.8in,right=1.8in,top=1in,bottom=1in]{geometry} % e. Set margins of 1 inch (2.54 cm.) on all four sides of the paper. 
+\usepackage{mathptmx} % d. ...in a simple roman face except where indicated below (§3). 
+\usepackage[frak=pxtx]{mathalpha}
+\usepackage[singlespacing]{setspace} % Set line spacing to 1 throughout the document
+\usepackage{fancyhdr}
+
+\usepackage{float}
+
+\usepackage{enumitem}
+\setlist{topsep=4pt, parsep=1pt,partopsep=1pt}
+
+\usepackage{amsthm}
+\usepackage{braket}
+\newtheorem{definition}{Definition}
+
+\usepackage{hyperref}
+
+\usepackage{listings}
+\include{latex-listings-powershell.tex}
+\usepackage{xcolor}
+
+\newcounter{codecounter}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.93,0.95}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% Set the headheight to at least 14.49998pt
+\setlength{\headheight}{14.49998pt}
+
+% Optionally adjust \topmargin if necessary
+% \addtolength{\topmargin}{-2.49998pt}
+\usepackage{relsize}
+
+\usepackage[bottom]{footmisc}
+\usepackage{tabularx}
+    
+\pagestyle{empty}        % No page numbers
+
+% Set paragraph indentation to 1.5cm
+\setlength{\parindent}{2em}
+
+%%%Using XeTeX (xelatex, lulatex):
+%\usepackage{polyglossia}
+%\usepackage{fontspec}
+%\usepackage{xunicode}
+%\usepackage{xltxtra}
+\usepackage{url}
+\usepackage[english,german]{babel}
+
+\usepackage{graphicx}
+
+%\setmainfont[Mapping=tex-text]{Linux Libertine O} %Falls nicht vorhanden müssen die LinLibertine-ttf-Dateien nach C:\windows\fonts verschoben werden
+
+\usepackage{booktabs}    % For nice-looking tables
+\usepackage[numbers]{natbib}      % Citation support (required for crossrefs)
+\usepackage{expex}
+\usepackage{bibentry}    % Print individual references
+
+\usepackage{acronym}
+\usepackage{multicol}
+
+% TODO: set authors name
+%vorgelegt von\\
+%Name des Verfassers/der Verfasserin\\
+\author{Mauricé Ricardo Bärisch}
+
+\usepackage{scrhack} % Recommended to avoid potential conflicts
+\usepackage{microtype}
+
+\usepackage[xindy,toc]{glossaries}
+\makeglossaries
+\usepackage{ragged2e}
+
+% Set up hyphenation rules for the language package when mistakes happen
+\babelhyphenation[english]{
+an-oth-er
+ex-am-ple
+}
